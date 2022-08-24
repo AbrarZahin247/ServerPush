@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <style>
+    .btn-success{
+      background-color: #1cb891;
+    }
+    input{
+      padding:4.5px 2px;
+      border-radius: 5px;
+    }
+    .blank-card {
+      height: 20vh;
+      width: 100%;
+      background-color: darkslategray;
+      min-height: 140px;
+    }
+
+    .blank-card-mini {
+      height: 20vh;
+      width: 100%;
+      background-color: darkslategray;
+      min-height: 100px;
+    }
+
+    .admin-container{
+      padding:20px 10px;
+      box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+    }
+
+    @media screen and (min-width:1200) {
+      .blank-card {
+        height: 20vh;
+        width: 100%;
+        background-color: darkslategray;
+        min-height: 250px;
+      }
+
+      .blank-card-mini {
+        height: 20vh;
+        width: 100%;
+        background-color: darkslategray;
+        min-height: 230px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="row justify-content-center align-items-center my-1 bg-lgreen py-3">
+      <h4 class="text-center">Administrative Page for Game Control</h4>
+    </div>
+    <div class="row justify-content-center align-items-center">
+      <div class="col-12 col-lg-8 admin-container"> 
+        <div class="col-12 d-flex justify-content-center my-5">
+          <button class="btn btn-dark px-4" onclick="JoinAdmin()">Join</button>
+        </div>
+
+        <div class="row justify-content-center align-items-center ms-5">
+          <div class="form-group col-12 col-lg-8">
+            <label class="form-label fw-bold me-2">Set Game Money</label>
+            <input id="game-money" class="form-control" value="10000"/>
+          </div>
+        </div>
+        <div class="form-check form-switch me-2 d-flex justify-content-center my-4">
+          <input class="form-check-input" type="checkbox" role="switch" id="switchChecker">
+          <label class="ms-4 form-check-label" for="switchChecker">Start Match with the Allocated Money</label>
+        </div>
+        <div class="row justify-content-center align-items-center my-1 bg-lgreen py-3">
+          
+            <button class="col-3 btn btn-success px-4 me-4" onclick="StartMatch()">Start Match</button>  
+            <button class="col-3 btn btn-danger px-4" onclick="ResetDb()">Reset Game</button>
+        </div>
+        <div class="row justify-content-center align-items-center my-1 bg-lgreen py-4">
+          <button class="col-3 btn btn-info px-4 me-4" onclick="ShowOneOfTheCards()">Display Card</button>
+          <button class="col-3 btn btn-primary px-4" onclick="RevealAllCards()">Show Everyone's Card</button>
+        </div>
+
+        <div class="row justify-content-center align-items-center my-1 bg-lgreen py-3">
+          <div class="form-group col-12 col-md-6">
+            <label>Select the Winner</label>
+            <select class="form-select" id="winner-selectlist">
+              <option value="">-- Select -- </option>
+            </select>
+            <div class="row justify-content-center align-items-center">
+                <button class="col-12 btn btn-warning px-4 mt-5" onclick="DeclareWinner()">Declare Winner</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+    crossorigin="anonymous"></script>
+  <script src="../public/cardmaster.js"></script>
+
+  <script>
+    var countOfItemsToDisplay=0;
+    const socket = io();
+    
+    
+    socket.on("connect", () => {
+      window.sessionStorage.setItem("socket-id",socket.id);
+    });
+
+    //====Join on the room based on page load
+    // if (window.localStorage.getItem("myname") == undefined) {
+    //   window.localStorage.setItem("myname", "Administrator");      
+    // }
+
+    const JoinAdmin= ()=>{
+      socket.emit('join', "Administrator",window.sessionStorage.getItem("socket-id"));
+    }
+
+    //====Reset table to default state    
+    const ResetDb = ()=>{
+      let sign = prompt(`Do you want to Reset Game to Initial state?. Type 'yes' or y to continue`);
+      if(sign != null){
+        if(sign.toLowerCase()== "yes" || sign.toLowerCase()=="y"){
+          $("#winner-selectlist").html(`<option value="">-- Select -- </option>`);
+          socket.emit('reset_db_admn', "Administrator");
+        }
+      }
+      
+    }
+
+    //==== Show Cards from everyone
+    const RevealAllCards=()=>{
+      let sign = prompt(`Do you want to Reveal every player's Card ?. Type 'yes' or y to continue`);
+      if(sign != null){
+        if(sign.toLowerCase()== "yes" || sign.toLowerCase()=="y"){
+          socket.emit('reveal_all_cards', "Administrator");
+        }
+      }
+    }
+
+    //======Start the Match
+    const StartMatch = () => {
+      let amountToBeGiven= $("#switchChecker").is(":checked")?$("#game-money").val():0;
+      let sign = prompt(`lessPlease wait for others to join. Type 'yes' or y to continue`);
+      if(sign != null){
+        if(sign.toLowerCase()== "yes" || sign.toLowerCase()=="y"){
+          socket.emit('start_game_admn',amountToBeGiven);        
+        }
+      }      
+      window.localStorage.setItem("show_card",0);
+      return;
+    }
+   
+
+    //======Declare Winnder
+    const DeclareWinner = () => {
+      let winner=$("#winner-selectlist").val();
+      let sign = prompt(`Do you want to Declare ${winner} as the Winner of this match? Type 'yes' or y to continue`);
+      if(sign != null){
+        if(sign.toLowerCase()== "yes" || sign.toLowerCase()=="y"){
+          socket.emit('declare_winner',winner);          
+        }
+      }      
+      window.localStorage.setItem("show_card",0);
+      return;
+    }
+   
+
+
+    //=== Show Cards
+    const ShowOneOfTheCards = () => {
+      console.log("show cards");
+      const allCards = ["card-5", "card-4", "card-3", "card-2", "card-1"];
+      if(window.localStorage.getItem("show_card")!=undefined){
+        let lastDisplayedCard=parseInt(window.localStorage.getItem("show_card"));
+        if (confirm(`Show the Card-${lastDisplayedCard+1} ?`)) {
+          socket.emit("display-card", allCards[lastDisplayedCard]);
+          
+          if(lastDisplayedCard < allCards.length-1){
+            lastDisplayedCard++;
+            window.localStorage.setItem("show_card",lastDisplayedCard);
+            return;
+          }
+        }        
+      }      
+    }
+       
+
+    socket.on('player_joined', function (user) {
+      console.log("player joined");
+      alert(`Congratulation !! ${user} joined`);
+    });
+
+    socket.on('start_game', function (playerCardInfo) {
+      $("#winner-selectlist").html(`<option value="">-- Select -- </option>`);
+      let tempString=$("#winner-selectlist").html();
+      playerCardInfo.forEach(elm => {
+        tempString+=`<option value="${elm.name}">${elm.name}</option>`;        
+      });
+      $("#winner-selectlist").html(tempString);
+    });
+
+  </script>
+</body>
+
+</html>
