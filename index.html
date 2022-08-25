@@ -359,13 +359,15 @@
           if (type == "Raise") {
             //$(`#p${userCardId}-given`).text(`Amount Played:${raisedMoney}`);
             //$(`#p${userCardId}-money`).text(availableCash);
-            let myMoney = gameOverviewInfos[parseInt(window.sessionStorage.getItem("selfCardId"))].money;
-            if(raisedMoney>myMoney){
-              alert("You can't raise money higher than your balance.")
-            }
-            else{
-              socket.emit('game_event', 'Raise', username, raisedMoney.toString());
-            }
+            socket.emit('game_event', 'Raise', username, raisedMoney.toString());
+            
+            // let myMoney = gameOverviewInfos[parseInt(window.sessionStorage.getItem("selfCardId"))].money;
+            // if(raisedMoney>myMoney){
+            //   alert("You can't raise money higher than your balance.")
+            // }
+            // else{
+            //   socket.emit('game_event', 'Raise', username, raisedMoney.toString());
+            // }
             
             $('#raised-amount').val("");
           }
