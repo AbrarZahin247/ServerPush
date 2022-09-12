@@ -250,8 +250,44 @@ io.on('connection', (socket) => {
       
       db.set("current_state",JSON.stringify(playerCardInfo));
       db.set("last_state",JSON.stringify([]));
-      io.emit("start_game",playerCardInfo);
+      socket.emit("ready_to_start_game",playerCardInfo);
+      //io.emit("start_game",playerCardInfo);
     });
+
+    socket.on('start-directly',(playerCardInfo,user)=>{
+      if(user!= undefined && user == "Administrator"){
+        io.emit("start_game",playerCardInfo);
+      }
+    })
+
+    socket.on('set-individual-player-money',(userMoneyArry,user)=>{
+      console.log("set-individual-player-money");
+      console.log(userMoneyArry,user);
+      if(user!= undefined && user == "Administrator"){
+        if(JSON.parse(db.get("final_result")).length>0){
+          let playerCardInfo=JSON.parse(db.get("final_result"));
+          //console.log(playerCardInfo);
+          playerCardInfo.forEach(x=>{
+            //====get the index of each element from userMoneyArry
+            let desiredUserInfo = userMoneyArry.filter(y=>y.name==x.name);
+            console.log(desiredUserInfo[0].amount);
+            if(desiredUserInfo.length >0){
+              
+              x.money = desiredUserInfo[0].amount;
+              if(db.has(`${x.name}`)){
+                let existingKeyInfo =JSON.parse(db.get(`${x.name}`));
+                existingKeyInfo.money=desiredUserInfo[0].amount;
+
+                //====Now set playerMoney in Db;
+                db.set(`${x.name}`, JSON.stringify(existingKeyInfo));
+              }              
+            }
+          });
+          console.log(playerCardInfo);
+          io.emit("start_game",playerCardInfo);
+        }
+      }
+    })
 
     socket.on('display-card',(d)=>{
       let card = FindRightCardForRender();

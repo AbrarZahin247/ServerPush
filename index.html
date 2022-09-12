@@ -9,14 +9,20 @@
     .blank-card {
       height: 20vh;
       width: 100%;
-      background-color: darkslategray;
+      background: url("../public/card-background.jpg");
+      background-size: 250px;
+      box-shadow: 0 1rem 2rem hsl(0 0% 0% / 20%);
+      border:2px solid rgb(245, 115, 115);
       min-height: 140px;
     }
 
     .blank-card-mini {
       height: 20vh;
       width: 100%;
-      background-color: darkslategray;
+      background: url("../public/card-background.jpg");
+      background-size: 250px;
+      box-shadow: 0 1rem 2rem hsl(0 0% 0% / 20%);
+      border:2px solid rgb(245, 115, 115);
       min-height: 110px;
     }
 
@@ -59,7 +65,7 @@
 
     @media screen and (min-width: 900px) {
       .blank-card {
-        height: 40vh;
+        height: 45vh;
         width: 100%;
         background-color: darkslategray;
         min-height: 250px;
@@ -69,7 +75,7 @@
         height: 20vh;
         width: 100%;
         background-color: darkslategray;
-        min-height: 210px;
+        min-height: 155px;
       }
     }
   </style>
@@ -121,7 +127,7 @@
 
       <div class="d-flex justify-content-center align-items-center mt-4 col-3">
         <div class="col-8">
-          <input id="raised-amount" class="form-control" />
+          <input type="number" id="raised-amount" class="form-control" />
         </div>
         <button class="btn btn-info px-4" onclick="SendGameEvent('Raise')">Raise</button>
       </div>
@@ -223,6 +229,14 @@
       $("#join-cont,#join-btn").hide();
     }
 
+    const RenderMyCard = async (cardsIReceived)=>{
+      if (cardsIReceived.length > 0) {
+        window.sessionStorage.setItem("receivedCards", JSON.stringify(cardsIReceived));
+        $(`#p${window.sessionStorage.getItem("myUserIndex")}-firstCard`).html(`<card-t rank=${cardsIReceived[0][0]} suit=${cardsIReceived[0][1]}></card-t>`);
+        $(`#p${window.sessionStorage.getItem("myUserIndex")}-secondCard`).html(`<card-t rank=${cardsIReceived[1][0]} suit=${cardsIReceived[1][1]}></card-t>`);
+      }
+    }
+
     //===Server sends response with the player's own card
     socket.on("your_card_is",function(myOwnCard){
       cardsIReceived=myOwnCard;
@@ -238,11 +252,12 @@
       alert(`The winner of the match is ${winner}.`);
     });
 
-    socket.on('mynewcards', function (myCards, cardUser) {
+    socket.on('mynewcards', async function (myCards, cardUser) {
       console.log("event executed");
-      alert("I Received my card");
+      //alert("I Received my card");
       if (window.sessionStorage.getItem("myname") == cardUser) {
         cardsIReceived = myCards;
+        await RenderMyCard(cardsIReceived);
       }
     })
 
@@ -396,11 +411,11 @@
           let higestAmount = [0,0];
           gameOverviewInfos.forEach(x => {
             console.log(x.playedThisRound)
-            if (parseInt(x.playedThisRound) > higestAmount[0]) {
-              higestAmount[0] = x.playedThisRound;
+            if (parseInt(x.playedTotalSoFar) > higestAmount[0]) {
+              higestAmount[0] = x.playedTotalSoFar;
             }
             if (x.name == username) {
-              higestAmount[1] = x.playedThisRound;
+              higestAmount[1] = x.playedTotalSoFar;
             }
           });
           let matchAmount = higestAmount[0] - higestAmount[1];

@@ -70,17 +70,38 @@
           <input class="form-check-input" type="checkbox" role="switch" id="switchChecker">
           <label class="ms-4 form-check-label" for="switchChecker">Start Match with the Allocated Money</label>
         </div>
-        <div class="row justify-content-center align-items-center my-1 bg-lgreen py-3">
+        
+
+        <!--Section for Setting Money for Each Player Individually-->
+        <div class="form-check form-switch me-2 d-flex justify-content-center my-4">
+          <input class="form-check-input" type="checkbox" role="switch" id="switchCheckerForIndividualAllocation">
+          <label class="ms-4 form-check-label" for="switchChecker">Set Money for each individual player</label>
+        </div>
+        <!--Admin Panel for setting individual money-->
+        <div class="row justify-content-center align-items-center my-1 py-3">
+          <div class="form-group col-12 col-md-6">
+            <div id="money-setter-cont"></div>            
+            <!-- <div class="row justify-content-center align-items-center">
+                <button class="col-12 btn btn-primary px-4 mt-5" onclick="DeclareWinner()">Set Money for Individual Player</button>
+            </div> -->
+          </div>
+        </div>
+        <!--End Admin Panel for setting individual money-->
+        <!--End of Section for Setting Money for Each Player Individually-->
+
+
+        <div class="row justify-content-center align-items-center my-1 py-3">
           
-            <button class="col-3 btn btn-success px-4 me-4" onclick="StartMatch()">Start Match</button>  
+            <button id="start-match" class="col-3 btn btn-success px-4 me-4" onclick="StartMatch()">Start Match</button>  
             <button class="col-3 btn btn-danger px-4" onclick="ResetDb()">Reset Game</button>
         </div>
-        <div class="row justify-content-center align-items-center my-1 bg-lgreen py-4">
+        <div class="row justify-content-center align-items-center my-1 py-4">
           <button class="col-3 btn btn-info px-4 me-4" onclick="ShowOneOfTheCards()">Display Card</button>
-          <button class="col-3 btn btn-primary px-4" onclick="RevealAllCards()">Show Everyone's Card</button>
+          <button class="col-3 btn btn-primary px-4" onclick="RevealAllCards()">Reveal All Player's Card</button>
         </div>
 
-        <div class="row justify-content-center align-items-center my-1 bg-lgreen py-3">
+
+        <div class="row justify-content-center align-items-center my-1 py-3">
           <div class="form-group col-12 col-md-6">
             <label>Select the Winner</label>
             <select class="form-select" id="winner-selectlist">
@@ -91,6 +112,7 @@
             </div>
           </div>
         </div>
+        
       </div>
     </div>
   </div>
@@ -104,6 +126,7 @@
 
   <script>
     var countOfItemsToDisplay=0;
+    $("#start-match").show();
     const socket = io();
     
     
@@ -144,14 +167,27 @@
 
     //======Start the Match
     const StartMatch = () => {
-      let amountToBeGiven= $("#switchChecker").is(":checked")?$("#game-money").val():0;
-      let sign = prompt(`Do you want to start the game ? Type 'yes' or y to continue`);
-      if(sign != null){
-        if(sign.toLowerCase()== "yes" || sign.toLowerCase()=="y"){
-          socket.emit('start_game_admn',amountToBeGiven);        
-        }
-      }      
-      window.localStorage.setItem("show_card",0);
+      let isIndividualAllocationchecked=$("#switchCheckerForIndividualAllocation").is(":checked")?true:false;
+      let isGroupAllocationchecked=$("#switchChecker").is(":checked")?true:false;
+      //console.log(isIndividualAllocationchecked,isGroupAllocationchecked);
+      if(isGroupAllocationchecked || isIndividualAllocationchecked){
+
+        let amountToBeGiven= $("#switchChecker").is(":checked")?$("#game-money").val():0;
+        let sign = prompt(`Do you want to start the game ? Type 'yes' or y to continue`);
+        if(sign != null){
+          if(sign.toLowerCase()== "yes" || sign.toLowerCase()=="y"){
+            socket.emit('start_game_admn',amountToBeGiven);        
+          }
+        }      
+        window.localStorage.setItem("show_card",0);
+        
+      }
+      else{
+        alert ("please check at least one of the slider");
+        return;
+      }
+      
+      
       return;
     }
    
@@ -185,13 +221,94 @@
             window.localStorage.setItem("show_card",lastDisplayedCard);
             return;
           }
-          
-            
-          
         }        
       }      
     }
+
+    //===Set the money of individual player
+    const RenderPlayerMoneySection = async (playerList)=>{
+      let initialContent=$("#money-setter-cont").html();
+      playerList.forEach(player=>{
+        initialContent += `<label>Set money of Player <span id="">${player.name}</span></label>
+        <input id="money-${player.name}" class="form-control"/>`
+      });
+      $("#money-setter-cont").html(initialContent);
+    }
+    const SetPlayerIndividualMoney = async(playerList)=>{
+        let arryofSettedPlayerMoney= [];
+        await playerList.forEach(player=>{
+          let playerMoney = parseInt($(`#money-${player.name}`).val());
+          if(isNaN(playerMoney)){
+            return [];
+          }          
+          arryofSettedPlayerMoney.push({name:`${player.name}`,amount:playerMoney});         
+              
+        });
+        return arryofSettedPlayerMoney;
+    }
+
+    const FinallyStartMatch = async ()=>{
+      let playerList= await JSON.parse(window.localStorage.getItem("playerList"));
+      let moneyArry= await SetPlayerIndividualMoney(playerList);
+      console.log(moneyArry);
+      //moneyArry = JSON.parse(window.localStorage.getItem("moneyArry"));
+      //console.log(moneyArry);
+      if(moneyArry != []){
+        socket.emit("set-individual-player-money",moneyArry,"Administrator");
+      }      
+    }
+    
+    const SetMoneyForEachPlayer = async (playerList)=>{
+
+      if(!$("#switchChecker").is(":checked")){
+        $("#start-match").hide();
+        await RenderPlayerMoneySection(playerList);
+
+        //===now render the action button for setting individual player money
+        let htmlContent = $("#money-setter-cont").html();
+        htmlContent+=`<button class="col-12 btn btn-primary px-4 mt-5" onclick="FinallyStartMatch()">Set Each Player Money & Start Match</button>`
+        $("#money-setter-cont").html(htmlContent);
+        await window.localStorage.setItem("playerList",JSON.stringify(playerList));
+      }
+      else{
+        socket.emit("start-directly",playerCardInfo,"Administrator");
+      }
+      
+    }
        
+
+    socket.on('ready_to_start_game', async function (playerCardInfo) {
+      console.log("Ready to Start Game");
+      //switchCheckerForIndividualAllocation
+      let shouldStartDirectly= $("#switchCheckerForIndividualAllocation").is(":checked")?false:true;
+      //=== based on checking if the box is at default state which means we should not allocated money send the event
+      //=== to admin to start the game otherwise set money for each player and then start the match.
+
+      if(shouldStartDirectly){
+        $('#switchCheckerForIndividualAllocation').attr('checked',false);
+        console.log("start directly");
+        socket.emit("start-directly",playerCardInfo,"Administrator");
+      }
+      else{
+        console.log("else logic");
+        $("#game-money").prop("readonly", true);
+        await SetMoneyForEachPlayer(playerCardInfo);
+      }
+      
+    });
+
+    //=== Show or hide individual money container based on user's toggle.
+    $("#switchCheckerForIndividualAllocation").change(()=>{
+      
+      let ischecked=$("#switchCheckerForIndividualAllocation").is(":checked")?true:false;
+      console.log(ischecked)
+      if(ischecked){
+        $("#money-setter-cont").show();
+      }
+      else{
+        $("#money-setter-cont").hide();
+      }
+    })
 
     socket.on('player_joined', function (user) {
       console.log("player joined");

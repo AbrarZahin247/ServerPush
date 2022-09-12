@@ -1,14 +1,14 @@
 {
     "last_state": "[]",
-    "current_state": "[{\"userIndex\":1,\"name\":\"zahin\",\"money\":6000,\"playedThisRound\":0,\"playedTotalSoFar\":0,\"currentState\":\"Not Started\",\"cards\":[]},{\"userIndex\":2,\"name\":\"mahadi\",\"money\":18000,\"playedThisRound\":0,\"playedTotalSoFar\":0,\"currentState\":\"Not Started\",\"cards\":[]},{\"userIndex\":3,\"name\":\"jim\",\"money\":6000,\"playedThisRound\":0,\"playedTotalSoFar\":0,\"currentState\":\"Not Started\",\"cards\":[]}]",
-    "blocked_cards": "[\"QueenDiamonds\",\"9Diamonds\",\"JackHearts\",\"9Spades\",\"7Spades\",\"3Hearts\"]",
-    "joinedplayer": "[{\"name\":\"Administrator\",\"socketid\":\"nUUjNfARBJqD7wd9AAAB\"},{\"name\":\"zahin\",\"socketid\":\"FSL80wO7xGLVSI7YAAAD\"},{\"name\":\"mahadi\",\"socketid\":\"ok31YcJgu8zYTmAdAAAB\"},{\"name\":\"jim\",\"socketid\":\"vP1knSlrLNBdtTjgAAAB\"}]",
-    "final_result": "[{\"userIndex\":1,\"name\":\"zahin\",\"money\":6000,\"playedThisRound\":0,\"playedTotalSoFar\":0,\"currentState\":\"Raise\",\"cards\":[]},{\"userIndex\":2,\"name\":\"mahadi\",\"money\":18000,\"playedThisRound\":0,\"playedTotalSoFar\":0,\"currentState\":\"Raise\",\"cards\":[]},{\"userIndex\":3,\"name\":\"jim\",\"money\":6000,\"playedThisRound\":0,\"playedTotalSoFar\":0,\"currentState\":\"Raise\",\"cards\":[]}]",
+    "current_state": "[{\"userIndex\":1,\"name\":\"a\",\"money\":8500,\"playedThisRound\":0,\"playedTotalSoFar\":0,\"currentState\":\"Not Started\",\"cards\":[]},{\"userIndex\":2,\"name\":\"b\",\"money\":8500,\"playedThisRound\":0,\"playedTotalSoFar\":0,\"currentState\":\"Not Started\",\"cards\":[]},{\"userIndex\":3,\"name\":\"c\",\"money\":13000,\"playedThisRound\":0,\"playedTotalSoFar\":0,\"currentState\":\"Not Started\",\"cards\":[]}]",
+    "blocked_cards": "[\"3Diamonds\",\"QueenHearts\",\"QueenClubs\",\"6Clubs\",\"8Hearts\",\"9Diamonds\"]",
+    "joinedplayer": "[{\"name\":\"Administrator\",\"socketid\":\"0dhnR5f5j03VpOlyAAAB\"},{\"name\":\"a\",\"socketid\":\"ZCZFAvmOSDHDc1T4AAAJ\"},{\"name\":\"b\",\"socketid\":\"fvsXRHm8J0hJG0DiAAAD\"},{\"name\":\"c\",\"socketid\":\"E5MiWcOmjAm2QXlFAAAF\"}]",
+    "final_result": "[{\"userIndex\":1,\"name\":\"a\",\"money\":8500,\"playedThisRound\":0,\"playedTotalSoFar\":0,\"currentState\":\"Check\",\"cards\":[]},{\"userIndex\":2,\"name\":\"b\",\"money\":8500,\"playedThisRound\":0,\"playedTotalSoFar\":0,\"currentState\":\"Check\",\"cards\":[]},{\"userIndex\":3,\"name\":\"c\",\"money\":13000,\"playedThisRound\":0,\"playedTotalSoFar\":0,\"currentState\":\"Check\",\"cards\":[]}]",
     "board_card": "[]",
-    "zahin-card": "[[\"Queen\",\"Diamonds\"],[\"9\",\"Diamonds\"]]",
-    "zahin": "{\"userIndex\":1,\"name\":\"zahin\",\"money\":6000,\"playedThisRound\":0,\"playedTotalSoFar\":0,\"currentState\":\"Not Started\",\"cards\":[]}",
-    "mahadi-card": "[[\"Jack\",\"Hearts\"],[\"9\",\"Spades\"]]",
-    "mahadi": "{\"userIndex\":2,\"name\":\"mahadi\",\"money\":18000,\"playedThisRound\":0,\"playedTotalSoFar\":0,\"currentState\":\"Not Started\",\"cards\":[]}",
-    "jim-card": "[[\"7\",\"Spades\"],[\"3\",\"Hearts\"]]",
-    "jim": "{\"userIndex\":3,\"name\":\"jim\",\"money\":6000,\"playedThisRound\":0,\"playedTotalSoFar\":0,\"currentState\":\"Not Started\",\"cards\":[]}"
+    "a-card": "[[\"3\",\"Diamonds\"],[\"Queen\",\"Hearts\"]]",
+    "a": "{\"userIndex\":1,\"name\":\"a\",\"money\":4500,\"playedThisRound\":0,\"playedTotalSoFar\":0,\"currentState\":\"Not Started\",\"cards\":[]}",
+    "b-card": "[[\"Queen\",\"Clubs\"],[\"6\",\"Clubs\"]]",
+    "b": "{\"userIndex\":2,\"name\":\"b\",\"money\":3000,\"playedThisRound\":0,\"playedTotalSoFar\":0,\"currentState\":\"Not Started\",\"cards\":[]}",
+    "c-card": "[[\"8\",\"Hearts\"],[\"9\",\"Diamonds\"]]",
+    "c": "{\"userIndex\":3,\"name\":\"c\",\"money\":5000,\"playedThisRound\":0,\"playedTotalSoFar\":0,\"currentState\":\"Not Started\",\"cards\":[]}"
 }
